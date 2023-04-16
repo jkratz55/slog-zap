@@ -7,24 +7,14 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/exp/slog"
 
-	slog_zap "github.com/jkratz55/slog-zap"
+	"github.com/jkratz55/zapslog"
 )
 
 func main() {
-	// opts := slog.HandlerOptions{ReplaceAttr: func(groups []string, attr slog.Attr) slog.Attr {
-	// 	if attr.Key == slog.LevelKey {
-	// 		level := attr.Value.Any().(slog.Level)
-	// 		levelLabel := slog_zap.LevelName(level)
-	//
-	// 		attr.Value = slog.StringValue(levelLabel)
-	// 	}
-	//
-	// 	return attr
-	// }}
 
+	// Default slog Json logger
 	sLogger := slog.New(slog.NewJSONHandler(os.Stderr))
 	sLogger = sLogger.With(slog.String("appId", "FG2212"))
-	sLogger = sLogger.WithGroup("main")
 	sLogger.Info("Testing some stuffs",
 		slog.Int("count", 11),
 		slog.String("service", "test"),
@@ -34,9 +24,11 @@ func main() {
 			slog.String("name", "cow")))
 
 	zLogger, _ := zap.NewProduction()
-	zSlogger := slog.New(slog_zap.NewHandler(zLogger))
+	zSlogger := slog.New(zapslog.NewHandler(zLogger))
+	zSlogger = zSlogger.With(slog.String("appId", "FG2212"))
+	zSlogger.Info("Something something dark side")
 	zSlogger.Log(context.Background(),
-		slog_zap.LevelPanic,
+		zapslog.LevelError,
 		"Testing some stuffs",
 		slog.Int("count", 11),
 		slog.String("service", "test"),
@@ -49,8 +41,6 @@ func main() {
 			slog.String("name", "cow")))
 
 	zSlogger.Info("Did we panic?")
-
-	zLogger.Panic("")
 
 	// zSlogger.Log(context.Background(), slog_zap.LevelPanic, "Ohhhh snap",
 	// 	slog.String("name", "something"),

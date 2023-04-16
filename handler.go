@@ -70,13 +70,28 @@ func (h *Handler) Handle(ctx context.Context, record slog.Record) error {
 }
 
 func (h *Handler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	// TODO implement me
-	panic("implement me")
+	zapFields := make([]zapcore.Field, len(attrs))
+	_ = h.fields(func(f []zapcore.Field) error {
+		for _, attr := range attrs {
+			f = h.appendAttr(f, attr, "")
+		}
+		copy(zapFields, f)
+		return nil
+	})
+
+	return &Handler{
+		logger:     h.logger.With(zapFields...),
+		stackPool:  h.stackPool,
+		fieldsPool: h.fieldsPool,
+	}
 }
 
 func (h *Handler) WithGroup(name string) slog.Handler {
-	// TODO implement me
-	panic("implement me")
+	return &Handler{
+		logger:     h.logger.Named(name),
+		stackPool:  h.stackPool,
+		fieldsPool: h.fieldsPool,
+	}
 }
 
 func (h *Handler) frame(caller uintptr) (runtime.Frame, error) {
