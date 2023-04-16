@@ -1,0 +1,25 @@
+# go.mrchanchal.com/zaphandler v0.0.0-20230328042040-fb33ea63b698
+## explicit; go 1.20
+go.mrchanchal.com/zaphandler
+# go.uber.org/atomic v1.10.0
+## explicit; go 1.18
+go.uber.org/atomic
+# go.uber.org/multierr v1.11.0
+## explicit; go 1.19
+go.uber.org/multierr
+# go.uber.org/zap v1.24.0
+## explicit; go 1.19
+go.uber.org/zap
+go.uber.org/zap/buffer
+go.uber.org/zap/internal
+go.uber.org/zap/internal/bufferpool
+go.uber.org/zap/internal/color
+go.uber.org/zap/internal/exit
+go.uber.org/zap/zapcore
+# golang.org/x/exp v0.0.0-20230321023759-10a507213a29
+## explicit; go 1.18
+golang.org/x/exp/constraints
+golang.org/x/exp/slices
+golang.org/x/exp/slog
+golang.org/x/exp/slog/internal
+golang.org/x/exp/slog/internal/buffer

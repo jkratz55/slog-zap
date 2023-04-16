@@ -13,3 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/codeStyles/Project.xml
+/.idea/.gitignore
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/slog-zap.iml
+/.idea/vcs.xml
