@@ -45,8 +45,8 @@ func mapLevel(lvl slog.Level) zapcore.Level {
 	case LevelFatal:
 		return zap.FatalLevel
 	default:
-		// slog only has DEBUG, INFO, WARN, and ERROR levels so if we encounter
-		// anything else we are going to panic as that should not be possible.
-		return zap.PanicLevel
+		// If there is no mapping from slog level to zap level default to error
+		// level and hope someone reviewing logs notices
+		return zap.ErrorLevel
 	}
 }

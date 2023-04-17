@@ -3,7 +3,6 @@ package zapslog
 import (
 	"context"
 	"fmt"
-	"math"
 	"runtime"
 	"sync"
 
@@ -16,13 +15,23 @@ type stacktrace struct{ pc [1]uintptr }
 
 type fields struct{ fields []zapcore.Field }
 
+// Handler is an implementation of slog.Handler interface backed by Zap's Logger.
+//
+// The zero-value of Handler is not usable. Handler should be created/initialized
+// using the NewHandler function.
 type Handler struct {
 	logger     *zap.Logger
 	stackPool  *sync.Pool
 	fieldsPool *sync.Pool
 }
 
+// NewHandler creates and initializes a new Handler.
+//
+// This function will panic if passed a nil zap.Logger.
 func NewHandler(logger *zap.Logger) *Handler {
+	if logger == nil {
+		panic("cannot create Handler with nil zap.Logger")
+	}
 	return &Handler{
 		logger:     logger,
 		stackPool:  &sync.Pool{New: func() any { return &stacktrace{pc: [1]uintptr{}} }},
@@ -131,53 +140,4 @@ func (h *Handler) appendAttr(fields []zapcore.Field, attr slog.Attr, prefix stri
 	}
 
 	return fields
-}
-
-func getType(val slog.Value) (zapcore.FieldType, int64, string, any) {
-	var (
-		Type      = zapcore.ReflectType
-		Integer   = int64(0)
-		String    = ""
-		Interface = any(nil)
-	)
-
-	Kind := val.Kind()
-	if t, found := mapField(Kind); found {
-		Type = t
-	}
-
-	switch Kind {
-	case slog.KindAny:
-		Interface = val.Any()
-
-		switch Interface.(type) {
-		case fmt.Stringer:
-			Type = zapcore.StringerType
-		case error:
-			Type = zapcore.ErrorType
-		}
-	case slog.KindBool:
-		if val.Bool() {
-			Integer = 1
-		}
-	case slog.KindDuration:
-		Integer = int64(val.Duration())
-	case slog.KindFloat64:
-		Integer = int64(math.Float64bits(val.Float64()))
-	case slog.KindInt64:
-		Integer = val.Int64()
-	case slog.KindString:
-		String = val.String()
-	case slog.KindTime:
-		t := val.Time()
-		Integer = t.UnixNano()
-		Interface = t.Location()
-	case slog.KindUint64:
-		Type = zapcore.Uint64Type
-		Integer = int64(val.Uint64())
-	case slog.KindGroup:
-	case slog.KindLogValuer:
-	}
-
-	return Type, Integer, String, Interface
 }
